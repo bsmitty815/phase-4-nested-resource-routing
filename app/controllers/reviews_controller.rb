@@ -1,10 +1,19 @@
 class ReviewsController < ApplicationController
   rescue_from ActiveRecord::RecordNotFound, with: :render_not_found_response
 
+  
+
   def index
-    reviews = Review.all
+    #Rails provides params[:dog_house_id] for us through the nested route, so we don't
+    #have to worry about a collision with the :id parameter that reviews#show is looking for
+    if params[:dog_house_id]
+      dog_house = DogHouse.find(params[:dog_house_id])
+      reviews = dog_house.reviews
+    else
+      reviews = Review.all
+    end
     render json: reviews, include: :dog_house
-  end
+  end 
 
   def show
     review = Review.find(params[:id])
